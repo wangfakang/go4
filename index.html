@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Go4 by wangfakang</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Go4</h1>
+        <p class="header">go write log to rsyslog</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/wangfakang/go4/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/wangfakang/go4/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/wangfakang/go4">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/wangfakang">wangfakang</a></p>
+
+
+      </header>
+      <section>
+        <p><code>rslog项目的介绍</code></p>
+
+<h1>
+<a id="rslog介绍" class="anchor" href="#rslog%E4%BB%8B%E7%BB%8D" aria-hidden="true"><span class="octicon octicon-link"></span></a>rslog介绍</h1>
+
+<p><a href="https://github.com/wangfakang/rslog">rslog</a>是在<a href="https://github.com/cihub/seelog">seelog</a>项目的基础上加了支持把日志文件传送到rsyslog中的一个lib.    </p>
+
+<h1>
+<a id="rslog使用说明----" class="anchor" href="#rslog%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E----" aria-hidden="true"><span class="octicon octicon-link"></span></a>rslog使用说明    </h1>
+
+<p>只需要在自己的项目中导入rslog模块,并注册一次下面的函数,后期按照直接记录日志即可(使用方法和原<a href="https://github.com/cihub/seelog">seelog</a>项目一样)     </p>
+
+<div class="highlight highlight-source-c"><pre>    <span class="pl-k">if</span> ok := log.RegisterRsyslogHandler(<span class="pl-s"><span class="pl-pds">"</span>./rsyslog.xml<span class="pl-pds">"</span></span>); ok == <span class="pl-c1">false</span> {
+        fmt.<span class="pl-c1">Printf</span>(<span class="pl-s"><span class="pl-pds">"</span>register rsyslog reveiver handler fail<span class="pl-pds">"</span></span>)
+    }</pre></div>
+
+<p>rsyslog.xml配置文件文件内容:</p>
+
+<div class="highlight highlight-source-c"><pre>&lt;seelog type=<span class="pl-s"><span class="pl-pds">"</span>sync<span class="pl-pds">"</span></span>&gt;
+&lt;outputs&gt;
+    &lt;custom name=<span class="pl-s"><span class="pl-pds">"</span>rsyslog<span class="pl-pds">"</span></span> formatid=<span class="pl-s"><span class="pl-pds">"</span>syslog<span class="pl-pds">"</span></span> data-net=<span class="pl-s"><span class="pl-pds">"</span>tcp<span class="pl-pds">"</span></span> data-addr=<span class="pl-s"><span class="pl-pds">"</span>127.0.0.1:5514<span class="pl-pds">"</span></span> data-tag=<span class="pl-s"><span class="pl-pds">"</span>myrsyslog<span class="pl-pds">"</span></span> /&gt;
+    &lt;rollingfile formatid=<span class="pl-s"><span class="pl-pds">"</span>syslog<span class="pl-pds">"</span></span> type=<span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span> filename=<span class="pl-s"><span class="pl-pds">"</span>./log/test<span class="pl-pds">"</span></span> archivetype=<span class="pl-s"><span class="pl-pds">"</span>zip<span class="pl-pds">"</span></span> datepattern=<span class="pl-s"><span class="pl-pds">"</span>2006-01-02<span class="pl-pds">"</span></span> /&gt;
+    &lt;console formatid=<span class="pl-s"><span class="pl-pds">"</span>syslog<span class="pl-pds">"</span></span> /&gt;
+&lt;/outputs&gt;
+&lt;formats&gt;
+    &lt;format id=<span class="pl-s"><span class="pl-pds">"</span>syslog<span class="pl-pds">"</span></span> format=<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%F</span>ile <span class="pl-c1">%F</span>unc <span class="pl-c1">%Li</span>ne <span class="pl-c1">%LE</span>V <span class="pl-ii">%</span>Msg<span class="pl-c1">%n</span><span class="pl-pds">"</span></span>/&gt;
+&lt;/formats&gt;
+&lt;/seelog&gt;
+</pre></div>
+
+<p>上面配置中的下面字段就是向rsyslog写日志的配置:      </p>
+
+<div class="highlight highlight-source-c"><pre>&lt;custom name=<span class="pl-s"><span class="pl-pds">"</span>rsyslog<span class="pl-pds">"</span></span> formatid=<span class="pl-s"><span class="pl-pds">"</span>syslog<span class="pl-pds">"</span></span> data-net=<span class="pl-s"><span class="pl-pds">"</span>tcp<span class="pl-pds">"</span></span> data-addr=<span class="pl-s"><span class="pl-pds">"</span>127.0.0.1:5514<span class="pl-pds">"</span></span> data-tag=<span class="pl-s"><span class="pl-pds">"</span>myrsyslog<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<p>其中上面参数含义:           </p>
+
+<ul>
+<li>data-net:  连接rsyslog使用的套接字类型(tcp,udp)default tcp<br>
+</li>
+<li>data-addr: rsyslog的ip和port (default 127.0.0.1:514)<br>
+</li>
+<li>data-tag:  每一行记录的日志信息的tag标志,default "rslog"<br>
+</li>
+</ul>
+
+<p>日志输出格式配置:  </p>
+
+<div class="highlight highlight-source-c"><pre>&lt;format id=<span class="pl-s"><span class="pl-pds">"</span>syslog<span class="pl-pds">"</span></span> format=<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%F</span>ile <span class="pl-c1">%F</span>unc <span class="pl-c1">%Li</span>ne <span class="pl-c1">%LE</span>V <span class="pl-ii">%</span>Msg<span class="pl-c1">%n</span><span class="pl-pds">"</span></span>/&gt;</pre></div>
+
+<ul>
+<li>%File:  在输出日志段加文件名<br>
+</li>
+<li>%Func:  在输出日志段加调用函数名<br>
+</li>
+<li>%Line:  在输出日志段加调用行数<br>
+</li>
+</ul>
+
+<p>更多详细配置请看<a href="https://github.com/cihub/seelog/wiki/Format-reference">Format</a>.       </p>
+
+<h1>
+<a id="欢迎一起交流学习-" class="anchor" href="#%E6%AC%A2%E8%BF%8E%E4%B8%80%E8%B5%B7%E4%BA%A4%E6%B5%81%E5%AD%A6%E4%B9%A0-" aria-hidden="true"><span class="octicon octicon-link"></span></a>欢迎一起交流学习 </h1>
+
+<p>在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流</p>
+
+<ul>
+<li>邮件(1031379296#qq.com, 把#换成@)</li>
+<li>QQ: 1031379296</li>
+<li>weibo: <a href="http://weibo.com/u/2786211992/home">@王发康</a>
+</li>
+</ul>
+
+<h1>
+<a id="thx" class="anchor" href="#thx" aria-hidden="true"><span class="octicon octicon-link"></span></a>Thx</h1>
+
+<ul>
+<li>chunshengsterATgmail.com</li>
+</ul>
+
+<h1>
+<a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>Author</h1>
+
+<ul>
+<li>Linux\nginx\golang\c\c++爱好者</li>
+<li>欢迎一起交流  一起学习# </li>
+<li>Others say good and Others good</li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("go write log to rsyslog using seelog lib");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
